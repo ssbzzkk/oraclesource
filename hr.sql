@@ -123,3 +123,76 @@ WHERE job_id='ST_CLERK' and department_id is not null;
 SELECT employee_id, first_name, job_id, salary*commission_pct as commission
 FROM EMPLOYEES
 WHERE COMMISSION_PCT is not null;
+
+--first_name 이 Curtis 인 사람의 first_name, last_name, email, phone_number, job_id 를 조회한다.
+--단, job_id의 결과는 소문자로 출력되도록 한다.
+SELECT first_name, last_name, email, phone_number, LOWER(job_id)
+FROM EMPLOYEES
+WHERE first_name='Curtis';
+
+
+--부서번호가 60,70,80,90인 사원들의 employee_id, first_name, hire_date, job_id 조회
+--단, job_id가 IT_PROG 인 사원의 경우 프로그래머로 변경한 후 출력
+SELECT employee_id, first_name, hire_date, REPLACE(job_id,'IT_PROG','프로그래머')   
+FROM EMPLOYEES
+WHERE DEPARTMENT_ID IN(60,70,80,90);
+
+
+--JOB_ID가 AD_PRES, PU_CLERK인 사원들의 employee_id, first_name, last_name, department_id, job_id를 조회한다.
+--단 사원명은 first_name과 last_name을 연결하여 출력
+SELECT employee_id, first_name ||' ' || last_name, department_id, job_id
+                        --CONCAT(FIRST_NAME,CONCAT(' ',LAST_NAME)
+FROM EMPLOYEES
+WHERE JOB_ID IN('AD_PRES','PU_CLERK');
+
+--예제 3
+select last_name,
+    salary, 
+    CASE
+    WHEN SALARY <1999 THEN 0
+    WHEN SALARY BETWEEN 2000 AND 3999 THEN 0.09
+    WHEN SALARY BETWEEN 4000 AND 5999 THEN 0.2
+    WHEN SALARY BETWEEN 6000 AND 7999 THEN 0.3
+    WHEN SALARY BETWEEN 8000 AND 9999 THEN 0.4
+    WHEN SALARY BETWEEN 10000 AND 11999 THEN 0.42
+    WHEN SALARY BETWEEN 12000 AND 13999 THEN 0.44
+    WHEN SALARY >14000 THEN 0.45
+    END
+    as TAX_RATE
+FROM EMPLOYEES
+WHERE DEPARTMENT_ID=80;
+
+select last_name,
+    salary,
+    DECODE(TRUNC(SALARY/2000,0),
+      0,
+      0.00,
+      1,
+      0.09,
+      2,
+      0.20,
+      3,
+      0.30,
+      4,
+      0.40,
+      5,
+      0.42,
+      6,
+      0.44,
+      0.45)
+      AS TAX_RATE
+FROM EMPLOYEES
+WHERE DEPARTMENT_ID=80;
+
+-- 회사 내의 최대 연봉 및 최소 연봉의 차이를 출력
+SELECT MAX(SALARY)-MIN(SALARY)
+FROM EMPLOYEES;
+
+--메니저로 근무하는 사원들의 총 숫자 출력(매니저 중복 제거)
+SELECT  COUNT(distinct MANAGER_ID)
+FROM EMPLOYEES;
+
+
+
+
+

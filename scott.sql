@@ -882,3 +882,22 @@ WHERE SAL<=3000
 GROUP BY DEPTNO, JOB
 HAVING AVG(SAL) >=2000
 ORDER BY DEPTNO, JOB;
+
+--실습1
+
+select deptno, FLOOR(avg(sal)) avg_sal, max(sal) max_sal,  min(sal) min_sal,  count(*) CNT
+from emp
+group by deptno
+order by deptno desc;
+
+--실습2
+select job, count(*) 
+from emp
+group by job
+HAVING COUNT(JOB)>=3;
+
+실습3
+SELECT TO_CHAR(HIREDATE,'YYYY'), DEPTNO, COUNT(*)
+FROM EMP
+GROUP BY TO_CHAR(HIREDATE,'YYYY'), DEPTNO
+ORDER BY DEPTNO;
