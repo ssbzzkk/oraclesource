@@ -19,7 +19,7 @@ SELECT
 FROM
     employees
 WHERE
-    employee_id = 176;  --TAYLOR
+    employee_id = 176;  
 
 --연봉이 12000 이상 되는 직원들의 LAST_NAME, SALARY조회
 SELECT
@@ -431,17 +431,18 @@ SELECT
     employee_id,
     last_name
 FROM
-    employees
-WHERE department_id =
-(select department_id 
+    employees e1
+WHERE e1.department_id in
+(select distinct department_id 
 from employees 
-where last_name like '%u%');
+where last_name like '%u%')
+order by e1.employee_id;
 
 --JOB_ID가 SA_MAN인 사원들의 최대 연봉보다 높게 받는 사원들의 LAST_NAME, JOB_ID, SALARY조회
 select
-    last_name, job_id, salary
+    last_name, job_id, salary 
 from employees
-where SALARY IN
+where SALARY >
 
 (SELECT MAX(SALARY)
 FROM EMPLOYEES
@@ -449,21 +450,29 @@ WHERE job_id='SA_MAN');
 
 --커미션을 버는 사원들의 부서와 연봉이 동일한 사원들의 LAST_NAME, DEPARTMENT_ID, SALARY 조회
 select last_name, department_id, salary
-from employees e1, employees e2
-where e1.salary=e2.
-
-select department_id from employees where commission_pct is not null;
+from employees
+where (department_id, salary)
+in (select department_id, salary from employees where commission_pct >0);
 
 
 --회사 전체 평균 연봉보다 더 받는 사원들 중 LAST_NAME에 u가 있는 사원들이 근무하는 부서에서
 --근무하는 사원들의 EMPLOYYE_ID, LAST_NAME, SALARY조회
+select employee_id, last_name, salary
+from (
+      select distinct department_id
+      from employees
+      where salary> (select round(avg(salary),0) from employees) and last_name like '%u%'
+      ) dept, employees e
+where e.department_id=dept.department_id order by employee_id;
 
 
 --LAST_NAME 이 Davies인 사람보다 나중에 고용된 사원들의 last_name, hire_date 조회
-
+select last_name, hire_date from employees where hire_date>
+(select hire_date from employees where last_name='Davies') order by hire_date;
 
 --last_name이 King 인 사원을 매니저로 두고 있는 모든 사원들의 last_name, salary조회
-
+select last_name, salary from employees
+where manager_id in(select employee_id from employees where last_name='King');
 
 
 

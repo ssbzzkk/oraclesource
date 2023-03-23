@@ -1411,9 +1411,239 @@ WHERE
 ORDER BY
     e.empno;
 
+--■ DML(★)(Data manipulation Language) : 데이터 추가(INSERT), 수정(UPDATE), 삭제(DELETE)하는 데이터 조작어
+-- select + DML ==> 자주 사용하는 SQL임
+-- COMMIT 개념 : DML 작업을 데이터베이스에 최종 반영시키라는 의미
+-- ROLLBACK 개념 : DML 작업을 취소할게요
+
+-- 연습용 테이블 생성
+-- 기존 테이블 복사
+CREATE TABLE dept_temp AS SELECT * FROM DEPT;  --DEPT 테이블의 모든것을 COPY
+-- 테이블 삭제
+DROP TABLE dept_temp;
+
+-- □INSERT 구문
+-- insert into 테이블이름(열이름1, 열이름2....)  *열이름은 선택사항임
+-- values(데이터1, 데이터2....)
+
+-- DEPT_TEMP 새로운 부서 추가하기 ①
+INSERT INTO DEPT_TEMP(deptno, dname, loc)
+values(50, 'database', 'seoul');
+
+select* from dept_temp; --확인용
+
+-- DEPT_TEMP 새로운 부서 추가하기 ② 열이름 제거
+INSERT INTO DEPT_TEMP
+values(60, 'network', 'seoul');
+
+select* from dept_temp; --확인용
+
+-- INSERT 시 오류 
+-- ① ORA-01438: 이 열에 대해 지정된 전체 자릿수보다 큰 값이 허용됩니다.
+  -- DATA_TYPE 이 NUMBER(2.0) : 숫자(두자리, 소숫점자리)
+INSERT INTO DEPT_TEMP
+values(600, 'network', 'seoul'); --자리수 에러
+
+INSERT INTO DEPT_TEMP
+values('NO', 'network', 'seoul'); -- 형태 에러(NUMBER는 숫자가 들어와야함)
+
+  -- '60' 문자처리해도 자동 형변환 시켜서 에러 안남
+INSERT INTO DEPT_TEMP
+values('60', 'network', 'seoul');
+
+--② SQL 오류: ORA-00947: 값의 수가 충분하지 않습니다
+  -- 칼럼은 세개 넣고 VALUE 는 두개 집어넣으면 매칭안돼서 에러남
+INSERT INTO DEPT_TEMP(deptno, dname, loc)
+values(70, 'database');
+
+-- NULL 을 넣을수 있음 : 1)NULL, 2)'', 3)NULL 삽입할 컬럼명 지정하지 않기
+INSERT INTO DEPT_TEMP(deptno, dname, loc)
+values(80, 'WEB', NULL);
+
+INSERT INTO DEPT_TEMP(deptno, dname, loc)
+values(90, 'WEB', '');
+--NULL 삽입할 컬럼명 지정하지 않기, 삽입시 전체 칼럽을 삽입하지 않는다면 필드명 필수
+INSERT INTO DEPT_TEMP(deptno, LOC)
+values(91,'INCHEON');
 
 
+--□ EMP_TEMP 생성(EMP 테이블 복사- 데이터는 복사를 하지 않을 때,  WHERE 1<>1 )
+CREATE TABLE emp_temp AS SELECT * FROM emp WHERE 1 <> 1;
+DROP TABLE emp_temp;
+
+insert into emp_temp(empno, ename, job, mgr, hiredate, sal, comm, deptno)
+values(9999, '홍길동', 'president', null, '2001/01/01', 5000,1000,10);
+
+insert into emp_temp(empno, ename, job, mgr, hiredate, sal, comm, deptno)
+values(1111, '성춘향', 'manager', 9999, '2002-01-05', 4000,null,20);
+--날짜 입력 시 년/월/일 순서-> 일/월/년 삽입
+--날짜 형식의 지정에 불필요한 데이터가 포함
+-- to_date('날짜', '날짜형식') 으로 가능
+insert into emp_temp(empno, ename, job, mgr, hiredate, sal, comm, deptno)
+values(1111, '이순신', 'manager', 9999, '07/01/2001', 4000,null,20);
+
+insert into emp_temp(empno, ename, job, mgr, hiredate, sal, comm, deptno)
+values(2222, '이순신', 'manager', 9999, to_date('07/01/2001','dd/mm/yyyy'),4000,null,20);
+
+--sysdate
+insert into emp_temp(empno, ename, job, mgr, hiredate, sal, comm, deptno)
+values(3333, '심봉사', 'manager', 9999, sysdate, 4000,null,30);
 
 
+--□ 서브쿼리로 insert 구현
+-- emp, salgrade 테이블을 조인 후 급여 등급이 1인 사원만 emp_temp 에 추가
+insert into emp_temp(empno, ename, job, mgr, hiredate, sal, comm, deptno)
+select e.empno, e.ename, e.job, e.mgr, e.hiredate, e.sal, e.comm, e.deptno
+from emp e, salgrade s
+where e.sal between s.losal and hisal and s.grade=1; 
+
+-- 여기까지 DML 한것을 COMMIT;
+COMMIT;
+
+--□ UPDATE : 테이블에 있는 데이터 수정
+
+--UPDATE 테이블명
+--SET 변경할열이름 = 데이터, 변경할열이름 = 데이터....
+--WHERE 변경을 위한 대상 행을 선별하기 위한 조건
+
+SELECT * FROM dept_temp;
+-- dept_temp loc 열의 모든 값을 seoul로 변경
+update dept_temp
+set loc='soul';
+-- commit안했으니 rollback 할수이씀
+rollback;
+
+--데이터 일부분 수정 : where 사용
+-- dept_temp 부서번호가 40번인 loc값을 seoul로 변경
+update dept_temp
+set loc='seoul'
+where deptno=40;
+
+-- dept_temp 부서번호가 80번 dname 은 sales, loc 는 chicago로 변경 
+update dept_temp
+set dname='sales', loc='chicago'
+where deptno=80;
 
 
+-- emp_temp 사원들 중에서 급여가 2500이하인 사원들만 추가수당을 50으로 수정
+update emp_temp
+set comm=50
+where sal<=2500;
+
+-- 서브쿼리를 사용하여 데이터 수정 가능
+-- dept 테이블의 40번 부서의 dname, loc를 dept_temp 40번 부서의 dname, loc로 업데이트
+
+update dept_temp
+set (dname, loc) = (select dname, loc
+                    from dept
+                    where deptno=40)
+where deptno=40;
+
+commit;
+
+--□ DELETE : 테이블에 있는 데이터 삭제
+--DELETE 테이블명
+--FROM (선택)
+--WHERE 삭제 데이터를 선별하기 위한 조건식
+
+CREATE TABLE EMP_TEMP2 AS SELECT * FROM EMP;
+
+--JOB이 MANAGER인 사원 삭제
+DELETE FROM EMP_TEMP2
+WHERE JOB='MANAGER';
+
+--FROM 안씀
+DELETE EMP_TEMP2
+WHERE JOB='SALESMAN';
+
+--전체 데이터 삭제
+DELETE EMP_TEMP2;
+
+ROLLBACK;
+
+
+--서브쿼리 사용하여 삭제
+--급여등급이 3등급이고, 30번 부서의 사원 삭제
+
+DELETE FROM EMP_TEMP2
+WHERE EMPNO IN (SELECT E.EMPNO
+                FROM EMP_TEMP2 E, SALGRADE S
+                WHERE E.SAL BETWEEN S.LOSAL AND S.HISAL AND E.DEPTNO=30 AND S.GRADE=3);
+
+COMMIT;
+
+--[실습1] 실습을 위하여 기존 테이블을 이용하여 테이블을 생성한다.
+--① EMP 테이블의 내용을 이용하여 EXAM_EMP 생성
+--② DEPT 테이블의 내용을 이용하여 EXAM_DEPT 생성
+--③ SALGRADE 테이블의 내용을 이용하여 EXAM_SALGRADE 생성
+create table exam_emp as select* from emp;
+create table exam_dept as select* from dept;
+create table exam_salgrade as select* from salgrade;
+
+--[실습2] 다음의 정보를 EXAM_EMP 테이블에 입력하시오.
+
+select * from exam_emp;
+INSERT INTO exam_emp(empno, ename, job, mgr, hiredate, sal, comm, deptno)
+values (7201,'TEST_USER1','MANAGER',7788,'16/01/02',4500,null,50);
+INSERT INTO exam_emp(empno, ename, job, mgr, hiredate, sal, comm, deptno)
+values (7202,'TEST_USER2','CLERK',7201,'16/02/21',1800,null,50);
+INSERT INTO exam_emp(empno, ename, job, mgr, hiredate, sal, comm, deptno)
+values (7203,'TEST_USER3','ANALYST',7201,'16/04/11',3400,null,60);
+INSERT INTO exam_emp(empno, ename, job, mgr, hiredate, sal, comm, deptno)
+values (7204,'TEST_USER4','SALESMAN',7201,'16/05/31',2700,300,60);
+INSERT INTO exam_emp(empno, ename, job, mgr, hiredate, sal, comm, deptno)
+values (7205,'TEST_USER5','CLERK',7201,'16/07/20',2600,null,70);
+INSERT INTO exam_emp(empno, ename, job, mgr, hiredate, sal, comm, deptno)
+values (7206,'TEST_USER6','CLERK',7201,'16/09/08',2600,null,70);
+INSERT INTO exam_emp(empno, ename, job, mgr, hiredate, sal, comm, deptno)
+values (7207,'TEST_USER7','LECTURER',7201,'16/10/28',2300,null,80);
+INSERT INTO exam_emp(empno, ename, job, mgr, hiredate, sal, comm, deptno)
+values (7208,'TEST_USER8','STUDENT',7201,'18/03/09',1200,null,80);
+
+--실습3] EXAM_EMP에 속한 사원 중 50번 부서에서 근무하는 사원들의 평균 급여보다 많은 급여를 받고 있는 사원들을 70번 부서로 옮기는 SQL 문 작성하기
+update EXAM_EMP
+set DEPTNO=70
+where SAL>(SELECT AVG(SAL) FROM EXAM_EMP WHERE DEPTNO=50); 
+
+--[실습4] EXAM_EMP에 속한 사원 중 60번 부서의 사원 중에서 입사일이 가장 빠른 사원보다 늦게 입사한 사원의 급여를 10% 인상하고 80번 부서로 옮기는 SQL 문 작성하기
+update EXAM_EMP
+set DEPTNO=80 ,  SAL=SAL*1.1
+WHERE HIREDATE > (SELECT MIN(HIREDATE) FROM EXAM_EMP WHERE DEPTNO=60); 
+
+--[실습5] EXAM_EMP에 속한 사원 중, 급여 등급이 5인 사원을 삭제하는 SQL문을 작성하기
+DELETE EXAM_EMP
+WHERE EMPNO IN (SELECT EMPNO 
+                FROM EXAM_EMP, SALGRADE
+                WHERE SAL BETWEEN LOSAL AND HISAL AND GRADE=5);
+
+COMMIT;
+
+
+--■ 트렌잭션(transaction) : 최소 수행 단위
+-- 트랜잭션 제어하는 구문 TCL (Transaction Control Language) : commit, rollback (DML구문만)
+create table dept_tcl
+as select * from dept;
+
+
+insert into dept_tcl values(50,'database','seoul');
+update dept_tcl set loc='busan' where deptno=40;
+delete from dept_tcl where dname='RESEARCH';
+ --트랜잭션 취소
+ ROLLBACK;
+ --트랜잭션 최종 반영
+ COMMIT;
+ 
+ --세션 : 어떤 활동을 위한 시간이나 기간
+ --데이터베이스 세션 : 데이터베이스 접속을 시작으로 관련작업 수행한 후 접속 종료
+ 
+ --50번 삭제, COMMIT 하지 않으면 SQL PLUS에는 반영안되어 있음
+delete from dept_tcl where DEPTNO=50;
+
+COMMIT;
+
+--디벨로퍼에서 물고 있는데 sql plus에 다른걸로 업데이트 하면 Lock됨 , 디벨로퍼에서 commit되기 전까지, 읽기의 일관성을 위해
+-- LOCK : 잠금(수정 중인 데이터 접근 막기)
+update dept_tcl set loc='SEOUL' where deptno=30;
+commit;
+
+ select * from dept_tcl;
