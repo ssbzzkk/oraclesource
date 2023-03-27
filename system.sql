@@ -23,7 +23,16 @@ CREATE USER SCOTT IDENTIFIED BY TIGER
 DEFAULT TABLESPACE USERS
 TEMPORARY TABLESPACE TEMP;
 
+--SCOTT에게 부여된 권한
 GRANT CONNECT, RESOURCE TO SCOTT;
+
+--뷰 생성 권한 부여
+GRANT CREATE VIEW TO SCOTT;
+
+--시노님 권한 부여
+grant create synonym to scott;
+grant create public synonym to scott;
+
 
 select * from all_users;
 
