@@ -69,4 +69,40 @@ CREATE TABLE sorder(
         REFERENCES product ( product_id )
 );
 
+ALTER TABLE sorder ADD order_date DATE; --구매날짜
+
+
+
 CREATE SEQUENCE order_seq;
+
+--insert into sorder values(order_seq.nextval,물건을 구매한 id,상품id,sysdate); 
+
+
+
+select u.user_id, u.name, u.pay_no, p.info
+from suser u, paytype p
+where u.pay_no = p.pay_no and u.user_id=1000;
+
+--주문정보 전체 조회
+select * from sorder;
+
+--주문목록 조회
+--user_id, name, card/cash, product_id, pname, price, content 화면에 띄우기
+
+--기준 sorder
+--suser테이블 : name
+--paytype테이블 : card/cash
+--prodcut테이블 : product_id, pname, price, content
+
+--전체주문목록
+select s.user_id, u.name, t.info, p.product_id, p.pname, p.price, p.content, s.order_date
+from sorder s, product p, suser u, paytype t
+where s.user_id=u.user_id and u.pay_no=t.pay_no and s.product_id=p.product_id;
+
+--홍길동 주문목록 조회
+select s.user_id, u.name, t.info, p.product_id, p.pname, p.price, p.content, s.order_date
+from sorder s, product p, suser u, paytype t
+where s.user_id=u.user_id and u.pay_no=t.pay_no and s.product_id=p.product_id and s.user_id=1000; 
+
+delete from suser where user_id=1111; 
+delete from suser where user_id=2222; 
