@@ -106,3 +106,5 @@ where s.user_id=u.user_id and u.pay_no=t.pay_no and s.product_id=p.product_id an
 
 delete from suser where user_id=1111; 
 delete from suser where user_id=2222; 
+
+commit;
