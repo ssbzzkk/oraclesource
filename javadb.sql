@@ -23,6 +23,33 @@ insert into usertbl(no, username, birthyear, addr, mobile)
             
  commit; 
  
+ 
+ -- select(+서브쿼리,조인) + DML(insert, delete, update)
+-- 전체조회
+select* from usertbl;
+--개별조회(특정번호,특정이름...)
+--여러행이 나오는 상태냐? 하나의 행이 결과로 나올것이냐?
+select*from usertbl where no=1;
+select*from usertbl where username='홍길동';
+
+-- like : _ or % 랑 같이 씀
+select*from usertbl where username like '%홍길동'; --앞에는 상관없고 끝에만 홍길동  %(여러글자), _(한글자)
+
+--insert into 테이블명(필드명1, 필드명2...)
+--values();
+
+--update 테이블명
+--set 업데이트할 필드명=값, 업데이트할 필드명=값, ...
+--where 조건;
+
+--delete 테이블명 where 조건
+--delete from 테이블명 where 조건
+ 
+ 
+ 
+ 
+ 
+ 
  --모든 칼럼 not null
  drop table paytype;
 --paytype 테이블 생성 : pay_no(숫자-1 pk), info(문자-card,cash)
