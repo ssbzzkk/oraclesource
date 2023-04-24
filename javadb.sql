@@ -135,3 +135,41 @@ delete from suser where user_id=1111;
 delete from suser where user_id=2222; 
 
 commit;
+
+
+--도서 테이블
+--code, title, writer, price
+--code: 1001(pk)
+--title : '자바의 신'
+--writer : '홍길동'
+--price : 25000
+
+--bookTBL 테이블 생성
+
+CREATE TABLE booktbl (
+    code   NUMBER(4) primary key, --not null+unique
+    title  nVARCHAR2(50) NOT NULL, -- varchr2 : 한글3 byte처리, nvarchar2 : 한글문자 1byte처리
+    writer   nVARCHAR2(20) NOT NULL,
+    price    number(8) not null
+);
+
+insert into booktbl(code, title, writer, price) values(1001, '이것이 자바다', '신용균', 25000);
+insert into booktbl(code, title, writer, price) values(1002, '자바의 신', '강신용', 28000);
+insert into booktbl(code, title, writer, price) values(1003, '오라클로 배우는 데이터베이스', '이지훈', 28000);
+insert into booktbl(code, title, writer, price) values(1004, '자바1000제', '김용만', 29000);
+insert into booktbl(code, title, writer, price) values(1005, '자바 프로그래밍 입문', '박은종', 30000);
+
+commit;
+
+alter table booktbl add description nvarchar2(100);
+
+update booktbl
+set description = '상세설명'
+where code=1001;
+
+commit;
+
+
+
+
+
