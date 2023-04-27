@@ -169,7 +169,21 @@ where code=1001;
 
 commit;
 
-
+-- member 테이블
+-- userid (영어,숫자,특수문자) 최대 12 허용, pk
+-- password (영어,숫자,특수문자) 최대 15 허용
+-- name (한글) 5자
+-- gender (한글) 남 or 여
+-- email 
+create table membertbl (
+    userid varchar2(15) primary key,
+    password varchar2(20) not null,
+    name nvarchar2(10) not null,
+    gender nvarchar2(2) not null,
+    email varchar2(50) not null
+    );
+insert into membertbl values('hong123', 'hong123@','홍길동','남','hong123@gmail.com');
+commit;
 
 
 
