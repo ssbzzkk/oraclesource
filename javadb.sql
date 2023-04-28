@@ -185,5 +185,6 @@ create table membertbl (
 insert into membertbl values('hong123', 'hong123@','홍길동','남','hong123@gmail.com');
 commit;
 
+select count(*) from membertbl where userid='hong123';
 
 
