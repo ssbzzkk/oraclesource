@@ -210,18 +210,39 @@ create table board (
 -- 시퀀스 생성 board_seq
 create sequence board_seq;
 
-delete board where bno=1;
+delete board where bno=30 or bno=29 or bno=28 or bno=27 or bno=26 or bno=25 or bno=24;
 commit;
 
+select* from board;
 
 
 
+-- 서브쿼리
+INSERT INTO board (
+    bno,
+    name,
+    password,
+    title,
+    content,
+    re_ref,
+    re_lev,
+    re_seq
+)
+    (
+        SELECT
+            board_seq.NEXTVAL,
+            name,
+            password,
+            title,
+            content,
+            board_seq.CURRVAL,
+            re_lev,
+            re_seq
+        FROM
+            board
+    );
 
-
-
-
-
-
+commit;
 
 
 
