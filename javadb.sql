@@ -330,3 +330,43 @@ where rnum>?;
 -- 3 page : rnum >60, rownum <=90    
 -- rownum 값 페이지번호 * 한 페이지에 보여줄 목룍 개수
 -- rnum 값 : (페이지번호-1) * 한 페이지에 보여줄 목록 개수
+
+select count(*) from board;
+select * from board where bno=1;
+--검색했을때 게시글 수
+select count(*) from board where title like '%게시글%';
+
+
+----------spring_board--------------------------
+--bno 숫자(10) 제약조건 pk 제약조건명 pk_spring_board
+--title varchar2(200) 제약조건 not null
+--content varchar2(2000) 제약조건 not null
+--writer varchar2(50) 제약조건 not null
+--regdate date default로 현재시스템날짜
+--updatedate date default로 현재시스템날짜
+--시퀀스, 
+
+create table spring_board(
+    bno number(10) constraint pk_spring_board primary key,
+    title varchar2(200) not null,
+    content varchar2(2000) not null,
+    writer varchar2(50) not null,
+    regdate date default sysdate,
+    updatedate date default sysdate
+    );
+--시퀀스 seq_board
+create sequence seq_board;
+
+commit;
+
+
+
+
+
+
+
+
+
+
+
+
