@@ -359,14 +359,11 @@ create sequence seq_board;
 
 commit;
 
+--mybatis 연습용 테이블
+create table person(
+id varchar2(20) primary key,
+name varchar2(30) not null);
 
-
-
-
-
-
-
-
-
-
+insert into person values('kang1234','강길동');
+commit;
 
