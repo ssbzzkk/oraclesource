@@ -607,6 +607,10 @@ replyer varchar2(50) not null,                    --댓글 작성자
 replydate date default sysdate,                   --댓글 작성날짜
 constraint fk_reply_board foreign key(bno) references spring_board(bno) --외래키 제약조건
 );
+
+--댓글 테이블 수정(컬럼 추가) updatedate
+alter table spring_reply add updatedate date default sysdate;
+
 create sequence seq_reply;
 commit;
 
@@ -615,6 +619,24 @@ select* from spring_board order by bno desc;
 insert into spring_reply(rno, bno, reply, replyer)
 values(seq_reply.nextval, 272,'댓글을 달아요', 'test1');
 commit;
+
+--spring_reply 인덱스 추가 설정
+create index idx_reply on spring_reply(bno desc, rno asc);
+
+select rno, bno, reply, replyer,replydate,updatedate
+from (select /*+INDEX(spring_reply idx_reply)*/ rownum rn,rno, bno, reply,replyer,replydate, updatedate
+      from spring_reply
+      where bno=272 and rownum <= 10)
+where rn > 0;
+
+--spring_board에 칼럼 추가(댓글 수 저장)
+alter table spring_board add replycnt number default 0;
+--이미 들어간 댓글 수 삽입
+update spring_board
+set replycnt=(select count(rno) from spring_reply where spring_board.bno=spring_reply.bno);
+select * from spring_board where bno=272;
+
+
 
 
 
