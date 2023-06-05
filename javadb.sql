@@ -635,8 +635,85 @@ alter table spring_board add replycnt number default 0;
 update spring_board
 set replycnt=(select count(rno) from spring_reply where spring_board.bno=spring_reply.bno);
 select * from spring_board where bno=272;
+commit;
+
+-- 파일첨부
+-- spring_attach
+-- uuid, uploadpath, filename, filetype
+create table spring_attach(
+    uuid varchar2(100) constraint pk_attach primary key,
+    uploadpath varchar2(200) not null,
+    filename varchar2(100) not null,
+    filetype char(1) default '1',
+    bno number(10,0) not null,
+    constraint fk_board_attach foreign key(bno) references spring_board(bno)
+);
+commit;
+delete from spring_attach where bno=288;
+
+-- spring_board bno 와 spring_attach bno 일치 시
+-- title, content, writer, bno, uuid, uploadpath, filetype, filename
+-- inner join 
+
+select title, content, writer, b.bno, uuid, uploadpath, filetype, filename
+from spring_board b join spring_attach a on a.bno = b.bno
+where b.bno=304;
+
+select * from spring_attach where uploadpath=to_char(sysdate-1,'yyyy\mm\dd');
+
+-- security 프로젝트에서 사용할 테이블
+-- user 테이블 작성 시 enabled 컬럼 추가
+create table sp_user(
+    userid varchar2(50) primary key,
+    email varchar2(100) not null,
+    password varchar2(100) not null,
+    enabled char(1) default '1');
+    
+-- user 테이블과 관련된 권한 테이블 작성
+create table sp_user_authority(
+    userid varchar2(50) not null,
+    authority varchar2(50) not null);
+    
+-- 외래 키 설정    
+alter table sp_user_authority add constraint sp_user_authority_fk foreign key(userid) references sp_user(userid);
+    
+insert into sp_user(userid,email,password) values('hong123', 'hong123@gmail.com','1111');
+insert into sp_user_authority(userid, authority) values('hong123', 'ROLE_USER');
+insert into sp_user_authority(userid, authority) values('hong123', 'ROLE_ADMIN');
+COMMIT;
+
+-- sp_user와 sp_user_authority , left outer join 
+select s1.userid, email, password, enabled,authority
+from sp_user s1 left outer join sp_user_authority s2 on s1.userid=s2.userid;
+
+-- 특정 user의 정보 추출
+select s1.userid, email, password, enabled,authority
+from sp_user s1 left outer join sp_user_authority s2 on s1.userid=s2.userid
+where s1.userid='hong123';
 
 
+-- remember-me 를 위한 테이블 작성
+create table persistent_logins(
+    username varchar2(64) not null,
+    series varchar2(64) primary key,
+    token varchar(64) not null,
+    last_used timestamp not null);
 
+
+-- spring_board연결할 user 테이블 생성
+create table spring_member(
+    userid varchar2(50) primary key,
+    userpw varchar2(100) not null,
+    username varchar2(100) not null,
+    regdate date default sysdate,
+    updatedate date default sysdate,
+    enabled char(1) default '1');
+
+-- spring_member 권한 테이블 생성 -> spring_member_auth
+-- userid, auth
+create table spring_member_auth(
+    userid varchar2(50) not null,
+    auth varchar2(50) not null,
+    constraint fk_member_auth foreign key(userid) references spring_member(userid));
 
 
