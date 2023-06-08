@@ -716,4 +716,4 @@ create table spring_member_auth(
     auth varchar2(50) not null,
     constraint fk_member_auth foreign key(userid) references spring_member(userid));
 
-
+alter table membertbl modify password varchar2(100);
